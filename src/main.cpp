@@ -115,9 +115,15 @@ int main()
     glDeleteShader(fragment_shader);
 
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
+         0.5f,  0.5f, 0.0f,
          0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+        -0.5f, -0.5f, 0.0f,
+        -0.5f,  0.5f, 0.0f
+    };
+
+    unsigned int indices[] = {
+        0, 1, 3,
+        1, 2, 3
     };
 
     unsigned int vertex_array_object;
@@ -128,6 +134,11 @@ int main()
     glGenBuffers(1, &vertex_buffer_object);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    unsigned int element_buffer_object;
+    glGenBuffers(1, &element_buffer_object);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
@@ -142,13 +153,22 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
         glUseProgram(shader_program);
         glBindVertexArray(vertex_array_object);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    glDeleteVertexArrays(1, &vertex_array_object);
+    glDeleteBuffers(1, &vertex_buffer_object);
+    glDeleteBuffers(1, &element_buffer_object);
+    glDeleteProgram(shader_program);
 
     glfwTerminate();
 
